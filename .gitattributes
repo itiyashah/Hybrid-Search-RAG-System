@@ -1,0 +1,5 @@
+# Force GitHub to count your frontend file as JavaScript or CSS
+app/static/index.html linguist-language=JavaScript
+
+# If you want CSS recognized from HTML as well, you can target specific html/template files:
+# app/static/index.html linguist-language=CSS
