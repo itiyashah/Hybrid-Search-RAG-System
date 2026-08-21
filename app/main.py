@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel # this helps in ensuring whether the session id of user is generated and whether the user has given the questions as an input 
 
 from langchain_community.document_loaders import PyPDFLoader # this is used to read and open pdf files
-from langchain_text_splitters import RecursiveCharacterTextSplitter # converts lon texts into small chunks or overlapping cards
+from langchain_text_splitters import RecursiveCharacterTextSplitter # converts long texts into small chunks or overlapping cards
 from langchain_huggingface import HuggingFaceEmbeddings #embedding models chose , which converts text cards into vector numbers
 from langchain_chroma import Chroma # vector database
 from langchain_google_genai import ChatGoogleGenerativeAI #answers the user's questions
@@ -22,9 +22,9 @@ from langchain_core.output_parsers import StrOutputParser
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 load_dotenv()
 
-app = FastAPI(title="Your Local Search Assistant") # app is the main varibale which is used ahead to run server also while executing the code through terminal
+app = FastAPI(title="Smart AI Research Assistant") # app is the main varibale which is used ahead to run server also while executing the code through terminal
 
-
+# self explanatory code
 store = {} # dictionary for storing session ids
 rag_chain = None
 # self-explanatory code below
@@ -118,7 +118,7 @@ Context:
         sub_queries_raw = query_decomposer.invoke({"question": standalone_question})
         sub_queries = [q.strip() for q in sub_queries_raw.split("\n") if q.strip()]
         
-        retrieved_docs = [] # de-duplication(prevents redundancy)
+        retrieved_docs = [] # de-duplication function (prevents redundancy)
         doc_ids = set()
         
         for query in sub_queries:
@@ -135,7 +135,7 @@ Context:
             source_file = os.path.basename(doc.metadata.get("source", "Unknown")) # name of the pdf
             page_num = doc.metadata.get("page", 0) + 1 # page no.
             citation_str = f"• {source_file} (Page {page_num})"
-            if citation_str not in citations: # prevents similar type of citations to get printed
+            if citation_str not in citations: # prevents similar type of citations to get printed multiple times
                 citations.append(citation_str)
 
         qa_chain = qa_prompt | llm | StrOutputParser()
