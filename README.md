@@ -36,3 +36,10 @@ I was going to create a public link for this , but instead i thought let you'all
 I just created this to understand my knowledge on classic rag system , how does it work , best way to learn any topic is to create a project on it.
 Also one more important thing , you can upload the documents between the range of 10 to 20 inside the data folder and you can ask max 3 questions at a time to the agent related to different pdfs.
 The agent uses conversational memory so it will remember your past conversations.
+
+## UPDATE:
+if while running the command it shows error that fast api module not found (module not found error) then just paste this command in terminal:
+pip install "fastapi[standard]" uvicorn
+this will install fastapi module , ensure that venv is activated in terminal
+
+This mostly happens when you try to move your project folder somewhere else for eg: in pen drives.
