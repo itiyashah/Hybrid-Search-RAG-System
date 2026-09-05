@@ -16,8 +16,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI #answers the user's qu
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableLambda # this is used to provide event listeners
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_community.chat_message_histories import ChatMessageHistory # our model also has conversational memory
+from langchain_community.chat_message_histories import SQLChatMessageHistory # our model also has conversational memory
 from langchain_core.output_parsers import StrOutputParser
+
+from langchain_community.retrievers import BM25Retriever
+from langchain_classic.retrievers import EnsembleRetriever
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 load_dotenv()
@@ -25,13 +28,20 @@ load_dotenv()
 app = FastAPI(title="Smart AI Research Assistant") # app is the main varibale which is used ahead to run server also while executing the code through terminal
 
 # self explanatory code
-store = {} # dictionary for storing session ids
+
 rag_chain = None
-# self-explanatory code below
+
+# SQLite database file path on your local disk
+DB_URL = "sqlite:///chat_history.db"
+
 def get_session_history(session_id: str):
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
+    """
+    Retrieves or creates persistent chat history stored in SQLite file.
+    """
+    return SQLChatMessageHistory(
+        session_id=session_id,
+        connection=DB_URL
+    )
 
 def initialize_rag_system():
     pdf_files = glob.glob("data/*.pdf")
@@ -58,7 +68,19 @@ def initialize_rag_system():
         embedding=embedding_model,
         persist_directory="./chroma_db"
     )
-    retriever = vector_db.as_retriever(search_kwargs={"k": 4}) # k here respresents no of text cards
+
+    # 1. Sparse Keyword Retriever (BM25)
+    bm25_retriever = BM25Retriever.from_documents(chunks)
+    bm25_retriever.k = 4
+
+    # 2. Dense Vector Retriever (ChromaDB)
+    vector_retriever = vector_db.as_retriever(search_kwargs={"k": 4})
+
+    # 3. Hybrid Ensemble Retriever (RRF Weighting)
+    retriever = EnsembleRetriever(
+        retrievers=[bm25_retriever, vector_retriever],
+        weights=[0.5, 0.5]
+    )
 
     print("🤖 Connecting to Google Gemini API...")
     llm = ChatGoogleGenerativeAI(
