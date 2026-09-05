@@ -37,6 +37,9 @@ I just created this to understand my knowledge on classic rag system , how does 
 Also one more important thing , you can upload the documents between the range of 10 to 20 inside the data folder and you can ask max 3 questions at a time to the agent related to different pdfs.
 The agent uses conversational memory so it will remember your past conversations.
 
+ALSO want to tell you that the keyword search happens through BM25 algorithm which indexes each word in the docs and then we use Reciprocal Rank Fusion (RRF) to find the best answer to the user query between semantic search and keyword search with the help of ensemble retriever.
+Conversational memory (past chat history of the user) , chroma db , all the documents are stored in hard disks , database used is sqlite for storing past chat history of the user. 
+
 ## UPDATE:
 if while running the command it shows error that fast api module not found (module not found error) then just paste this command in terminal:
 pip install "fastapi[standard]" uvicorn
