@@ -1,10 +1,11 @@
 # Hybrid-Search-RAG-System
-Combining semantic search + key-word search approach to find info from your local docs easily.
-so in this readme i am going to tell you how to run this project locally in your own device 
-1. you need to clone my repo : git clone <repository-url> ( copy the url under https tab or ssh tab if you have your ssh keys set up)
-2. ensure the folder structure is same like this in your computer:
-SMART-AI-ASSISTANT/
+
+Combining a semantic search + keyword search approach to easily retrieve information from your local documents.
+
+Ensure your project directory matches the structure below:
+
 ```text
+SMART-AI-ASSISTANT/
 ├── app/
 │   ├── static/
 │   │   └── index.html
@@ -15,34 +16,68 @@ SMART-AI-ASSISTANT/
 ├── .gitignore
 └── requirements.txt
 ```
+#### Local Setup & Installation
+ Clone the Repository
+ 
+git clone <REPOSITORY_URL>
+(Copy the URL under the HTTPS or SSH tab on GitHub depending on your SSH key configuration.)
 
-4. install all the dependencies listed in requirements.txt using the command: pip install -r requirements.txt
-5. create .env file which will have your api key which does not need to be share with others , i have taken google api key from google ai studio as its free to use and this api key uses the latest gemini model : gemini-3.7-flash
-6. i have added chroma_db/ in .gitignore file so that my saved database is not uploaded in GitHub and you can create your own fresh new database of your pdfs
-7. you have to run the code(main.py) using following command : uvicorn app.main:app --reload 
-8. Also ensure that you have set up your virtual environment :
-python -m venv venv (u can use python3 depending on your version)
-### On Windows:
+#### Create virtual environment
+python -m venv venv  # Use python3 depending on your installation
+
+Activate the virtual environment:
+
+#### Windows:
+
 venv\Scripts\activate
-### On Mac/Linux:
+
+#### Mac / Linux:
+
 source venv/bin/activate
 
+#### Install all required Python packages:
 
- In terminal you'll get url something like this : 
-     http://127.0.0.1:8000 
-so click and open it
+pip install -r requirements.txt
 
-I was going to create a public link for this , but instead i thought let you'all clone my repo and download stuffs so you can actually know what happens under the hood and also you can modify or change the code as per your wish.
-I just created this to understand my knowledge on classic rag system , how does it work , best way to learn any topic is to create a project on it.
-Also one more important thing , you can upload the documents between the range of 10 to 20 inside the data folder and you can ask max 3 questions at a time to the agent related to different pdfs.
-The agent uses conversational memory so it will remember your past conversations.
+#### Configure API Keys
+ 
+Create a .env file in the root directory and add your Google API key:
 
-ALSO want to tell you that the keyword search happens through BM25 algorithm which indexes each word in the docs and then we use Reciprocal Rank Fusion (RRF) to find the best answer to the user query between semantic search and keyword search with the help of ensemble retriever.
-Conversational memory (past chat history of the user) , chroma db , all the documents are stored in hard disks , database used is sqlite for storing past chat history of the user. 
+GOOGLE_API_KEY=your_google_api_key_here
 
-## UPDATE:
-if while running the command it shows error that fast api module not found (module not found error) then just paste this command in terminal:
+Note: Obtain a free API key from Google AI Studio. This project uses the latest gemini-3.7-flash model.
+
+#### Run the Application
+Start the FastAPI server using Uvicorn:
+
+uvicorn app.main:app --reload
+
+Once running, your terminal will output a local server URL:
+
+http://127.0.0.1:8000
+
+Click or open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your web browser to access the app.
+
+#### Technical Details & Architecture
+
+Keyword Search: Uses the BM25 algorithm to index individual words within your documents.
+
+Semantic + Keyword Hybrid Retrieval: Combines results using Reciprocal Rank Fusion (RRF) via an Ensemble Retriever to find the most accurate answer for the query.
+
+Vector Database: Uses Chroma DB for semantic vector storage. chroma_db/ is added to .gitignore so your local database remains private and fresh databases can be created locally.
+
+Conversational Memory: Uses an SQLite database stored on your hard disk to store user chat history across interactions.
+
+Document Capacity & Query Limits: Works best when uploading 10 to 20 documents inside the data/ folder. You can ask up to 3 questions at a time to the agent across different PDFs.
+
+#### Troubleshooting
+ModuleNotFoundError: No module named 'fastapi'
+
+If you encounter a FastAPI module error while running the server, run the following command in your terminal:
+
 pip install "fastapi[standard]" uvicorn
-this will install fastapi module , ensure that venv is activated in terminal
 
-This mostly happens when you try to move your project folder somewhere else for eg: in pen drives.
+Important: Ensure your virtual environment (venv) is activated before running this command. This issue frequently occurs if you move your project folder to another location (e.g., a pen drive).
+
+#### Project Purpose
+Rather than creating a hosted public link, this project is shared as a cloneable repository so developers can inspect what happens under the hood, learn classic RAG system mechanics, and modify or build upon the code.
